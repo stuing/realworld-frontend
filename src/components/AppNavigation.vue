@@ -1,39 +1,92 @@
 <template>
   <nav class="navbar navbar-light">
     <div class="container">
-      <RouterLink :to="{ name: 'global-feed' }" class="navbar-brand">conduit</RouterLink>
+      <AppLink
+        class="navbar-brand"
+        name="global-feed"
+      >
+        conduit
+      </AppLink>
+
       <ul class="nav navbar-nav pull-xs-right">
-        <li class="nav-item">
-          <RouterLink :to="{ name: 'my-feed' }" class="nav-link" exact-active-class="active">Home</RouterLink>
+        <li
+          v-for="link in navLinks"
+          :key="link.name"
+          class="nav-item"
+        >
+          <AppLink
+            class="nav-link"
+            active-class="active"
+            :name="link.name"
+            :params="link.params"
+          >
+            <i
+              v-if="link.icon"
+              :class="link.icon"
+            />
+            {{ link.title }}
+          </AppLink>
         </li>
-        <template v-if="isLoggedIn">
-          <li class="nav-item">
-            <RouterLink :to="{ name: 'create-article' }" class="nav-link"><i class="ion-compose"></i>&nbsp;New Article
-            </RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink :to="{ name: 'settings' }" class="nav-link"><i class="ion-gear-a"></i>&nbsp;Settings</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink :to="{ name: 'profile', params: { username: 'gaspar08' } }" class="nav-link">{{ username }}</RouterLink>
-          </li>
-        </template>
-        <template v-else>
-          <li class="nav-item">
-            <RouterLink :to="{ name: 'login' }" class="nav-link">Sign in</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink :to="{ name: 'register' }" class="nav-link">Sign up</RouterLink>
-          </li>
-        </template>
       </ul>
     </div>
   </nav>
 </template>
-  
+
 <script setup lang="ts">
-let isLoggedIn = false
-let username = ''
+import type { AppRouteNames } from 'src/router'
+import type { RouteParams } from 'vue-router'
+import { computed,ref } from 'vue'
+
+interface NavLink {
+  name: AppRouteNames
+  params?: Partial<RouteParams>
+  title: string
+  icon?: string
+  display: 'all' | 'anonym' | 'authorized'
+}
+
+const user = ref({})
+const username = computed(() => user.value?.username)
+const displayStatus = computed(() => username.value ? 'authorized' : 'anonym')
+
+const allNavLinks = computed<NavLink[]>(() => [
+  {
+    name: 'global-feed',
+    title: 'Home',
+    display: 'all',
+  },
+  {
+    name: 'login',
+    title: 'Sign in',
+    display: 'anonym',
+  },
+  {
+    name: 'register',
+    title: 'Sign up',
+    display: 'anonym',
+  },
+  {
+    name: 'create-article',
+    title: 'New Post',
+    display: 'authorized',
+    icon: 'ion-compose',
+  },
+  {
+    name: 'settings',
+    title: 'Settings',
+    display: 'authorized',
+    icon: 'ion-gear-a',
+  },
+  {
+    name: 'profile',
+    params: { username: username.value },
+    title: username.value || '',
+    display: 'authorized',
+  },
+])
+
+const navLinks = computed(() => allNavLinks.value.filter(
+  l => l.display === displayStatus.value || l.display === 'all'
+))
+
 </script>
-  
-<style scoped></style>
