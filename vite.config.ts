@@ -9,8 +9,8 @@ export default defineConfig({
     vue(),
   ],
   resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+    alias: { 
+      'src': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
 })

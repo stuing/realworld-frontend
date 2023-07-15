@@ -1,10 +1,11 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteParams, RouteRecordRaw } from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from 'src/views/Home.vue'
+import { isAuthorized } from 'src/store/user'
 // import { isAuthorized } from './store/user'
 // 这里暂时硬编码，等实现了登录功能后再从全局状态库中动态获取
 // true:已登录  false:未登录
-const isAuthorized = () => false
+//const isAuthorized = () => false
 
 export type AppRouteNames =
   | 'global-feed'

@@ -56,24 +56,50 @@
 
 <script setup lang="ts">
 //import { Api, ContentType } from '@/services/api'
-//import type { Article } from '@/services/api'
+//import { Api, ContentType } from '../services/api'
+import { api } from 'src/services'
+import type { Article } from 'src/services/api'
 import { onMounted } from 'vue'
 import { ref } from 'vue'
-
-//const articles = ref<Article[]>([])
-const articles = ref([])
+//import { CONFIG } from '@/config'
+ 
+const articles = ref<Article[]>([])
 const tags = ref<string[]>([])
-//const articlesCount = ref(0)
+const articlesCount = ref(0)
 
 onMounted(async () => {
-  const articlesUrl = 'https://api.realworld.io/api/articles?limit=5&offset=0'
-  const tagsUrl = 'https://api.realworld.io/api/tags' 
-  const articlesResponse = await fetch(articlesUrl)
-  const articlesData = await articlesResponse.json()
-  articles.value = articlesData.articles
+  // const api = new Api({
+  //   //baseUrl: 'https://api.realworld.io' + '/api',
+  //   baseUrl: `${CONFIG.API_HOST}/api`,
+  //   baseApiParams: {
+  //     headers: {
+  //       'content-type': ContentType.Json,
+  //     },
+  //     format: 'json',
+  //   },
+  // })
 
-  const tagsResponse = await fetch(tagsUrl)
-  const tagsData = await tagsResponse.json()
-  tags.value = await tagsData.tags
+  articles.value = []
+  tags.value = []
+  let articlesResponsePromise: null | Promise<{ articles: Article[], articlesCount: number }> = null
+  let tagsResponsePromise: null | Promise<{tags: string[]}> = null
+  articlesResponsePromise = api.articles.getArticles()
+    .then(res => res.data)
+  if (articlesResponsePromise !== null) {
+    const articlesResponse = await articlesResponsePromise
+    articles.value = articlesResponse.articles
+    articlesCount.value = articlesResponse.articlesCount
+  } else {
+    console.error('error')
+  }
+
+  tagsResponsePromise = api.tags.getTags()
+    .then(res => res.data)
+  if (tagsResponsePromise !== null) {
+    const tagsResponse = await tagsResponsePromise
+    tags.value = tagsResponse.tags
+  } else {
+    console.error('error')
+  }
 })
-</script>
+</script> 
