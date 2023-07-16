@@ -45,11 +45,20 @@ export const routes: RouteRecordRaw[] = [
     name: 'edit-article',
     path: '/article/:slug/edit',
     component: () => import('../views/EditArticle.vue'),
+    beforeEnter: () => isAuthorized()
   },
   {
     name: 'create-article',
     path: '/article/create',
     component: () => import('../views/EditArticle.vue'),
+    // beforeEnter: (to,from,next) => {
+    //   console.log('isAuthorized:', isAuthorized())
+    //   if(!isAuthorized())
+    //     next('/')
+    //   else
+    //     next()
+    // }
+    beforeEnter: () => isAuthorized()
   },
   {
     name: 'login',
